@@ -96,11 +96,11 @@ export default function Home() {
   return (
     <>
     <Header/>
-    <section className="w-full grid grid-cols-7">
-      <div className="col-span-1 border-gray-100 border-r-2 pt-10 pr-3 gap-2 flex flex-col">
+    <section className="w-full laptop:grid laptop:grid-cols-7 flex flex-col relative">
+      <div className="laptop:col-span-1 w-full top-0 border-gray-100 border-b-2 laptop:border-gray-100 laptop:border-r-2 laptop:pt-10 pr-3 gap-2 flex laptop:flex-col">
           <div 
             onClick={() => setActiveTab(0)}
-            className={`transitions-all ease-in-out duration-300 flex gap-4 text-slate-700 hover:cursor-pointer items-center hover:bg-slate-200 hover:text-blue-700 font-bold text-2xl p-5 rounded-e-full ${
+            className={`transitions-all ease-in-out duration-300 flex gap-4 rounded text-slate-700 hover:cursor-pointer items-center hover:bg-slate-200 hover:text-blue-700 font-bold text-2xl p-5 laptop:rounded-e-full ${
               activeTab === 0 ? 'bg-slate-200 text-[#3F47D6]' : ''
             }`}>
             <ChartBar size={32}/>
@@ -108,7 +108,7 @@ export default function Home() {
           </div>
           <div 
             onClick={() => setActiveTab(1)}
-            className={`flex gap-4 text-slate-700 hover:cursor-pointer items-center hover:bg-slate-200 hover:text-blue-700 font-bold text-2xl p-5 rounded-e-full ${
+            className={`flex gap-4 text-slate-700 hover:cursor-pointer items-center rounded hover:bg-slate-200 hover:text-blue-700 font-bold text-2xl p-5 laptop:rounded-e-full ${
               activeTab === 1 ? 'bg-slate-200 text-[#3F47D6]' : ''
             }`}>
             <Certificate size={32}/>
@@ -116,7 +116,7 @@ export default function Home() {
           </div>
           <div 
             onClick={() => setActiveTab(2)}
-            className={`flex gap-4 text-slate-700 hover:cursor-pointer items-center hover:bg-slate-200 hover:text-blue-700 font-bold text-2xl p-5 rounded-e-full ${
+            className={`flex gap-4 text-slate-700 hover:cursor-pointer items-center rounded hover:bg-slate-200 hover:text-blue-700 font-bold text-2xl p-5 laptop:rounded-e-full ${
               activeTab === 2 ? 'bg-slate-200 text-[#3F47D6]' : ''
             }`}>
             <File size={32}/>
@@ -128,9 +128,10 @@ export default function Home() {
         <div className="mb-10">
         <span className="text-slate-700 text-xl">{activeTab == 0 ? 'Dashboard': activeTab==1?'Skill Test' : 'Internship'  }</span>
         </div>
-        <div className="grid grid-cols-7 gap-10">
+
+        <div className="grid place-items-center laptop:grid-cols-7 tablet:grid-rows-2 gap-1">
           <div className="col-span-4 gap-4 flex flex-col">
-            <div className="flex p-3 gap-4 border-2 border-slate-200 rounded-xl justify-around items-center ">
+            <div className="flex p-3 border-2 border-slate-200 rounded-xl justify-around items-center ">
               <div>
                 <Image src={'/html.jpg'} width={100} height={100} alt={'HTML logo'}/>
               </div>
@@ -243,7 +244,7 @@ export default function Home() {
             <div className="flex flex-col p-4 gap-4 border-2 border-slate-200 rounded-xl">
               <h1 className="text-xl font-bold">Quick Statistics</h1>
 
-              <div className="flex  divide-x-2 gap-10">
+              <div className="flex justify-evenly divide-x-2 gap-10">
               <div className="flex items-center">
                 <div className="flex gap-5 p-3">
                   <div className=" bg-slate-200 border-2 border-slate-300 rounded-full p-4">

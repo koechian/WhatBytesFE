@@ -7,6 +7,13 @@ export default {
     "./app/**/*.{js,ts,jsx,tsx,mdx}",
   ],
   theme: {
+	screens: {
+		'tablet': '640px',
+		// => @media (min-width: 640px) { ... }
+  
+		'laptop': '1400px',
+		// => @media (min-width: 1024px) { ... }
+	  },
   	extend: {
   		colors: {
   			background: 'hsl(var(--background))',
