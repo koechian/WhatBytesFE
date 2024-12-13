@@ -1,5 +1,5 @@
 'use client'
-import { Certificate, ChartBar, File } from "@phosphor-icons/react/dist/ssr";
+import { ArrowRight, Certificate, ChartBar, File } from "@phosphor-icons/react/dist/ssr";
 import Header from "./components/Header/header";
 import { useState } from 'react';
 import Image from "next/image";
@@ -19,6 +19,79 @@ import {
 
 export default function Home() {
   const [activeTab, setActiveTab] = useState(1);
+  const [dialogOpen, setDialogOpen] = useState(false);
+  
+  // Add new state for test scores
+  const [testScores, setTestScores] = useState({
+    rank: 4,
+    percentile: 90,
+    currentScore: 12,
+  });
+
+  // Add error state
+  const [errors, setErrors] = useState({
+    rank: '',
+    percentile: '',
+    currentScore: '',
+  });
+
+  // Add handler for input changes
+  const handleScoreUpdate = (field, value) => {
+    const newValue = Number(value);
+    let error = '';
+
+    // Validate based on field
+    switch (field) {
+      case 'rank':
+        if (!value) {
+          error = 'Rank is required';
+        } else if (isNaN(newValue) || !Number.isInteger(newValue) || newValue < 1) {
+          error = 'Rank must be a positive number';
+        }
+        break;
+      case 'percentile':
+        if (isNaN(newValue) || newValue < 1 || newValue > 100) {
+          error = 'Percentile must be between 1 and 100';
+        }
+        break;
+      case 'currentScore':
+        if (isNaN(newValue) || newValue < 0 || newValue > 15) {
+          error = 'Score must be between 0 and 15';
+        }
+        break;
+    }
+
+    // Update errors
+    setErrors(prev => ({
+      ...prev,
+      [field]: error
+    }));
+
+    // Only update value if it's valid or empty
+    if (!error || !value) {
+      setTestScores(prev => ({
+        ...prev,
+        [field]: value === '' ? '' : newValue
+      }));
+    }
+  };
+
+  // Add handler for saving and closing
+  const handleSave = () => {
+    // Check for required fields and valid values
+    const newErrors = {
+      rank: !testScores.rank ? 'Rank is required' : '',
+      percentile: (testScores.percentile < 1 || testScores.percentile > 100) ? 'Percentile must be between 1 and 100' : '',
+      currentScore: (testScores.currentScore < 0 || testScores.currentScore > 15) ? 'Score must be between 0 and 15' : '',
+    };
+
+    setErrors(newErrors);
+
+    // Only close if there are no errors
+    if (!Object.values(newErrors).some(error => error)) {
+      setDialogOpen(false);
+    }
+  };
 
   return (
     <>
@@ -71,9 +144,11 @@ export default function Home() {
               </div>
               <div>
 
-                <Dialog>
-                  <DialogTrigger className="bg-[#13136E] text-white rounded border-2 border-black p-3 font-bold">Update</DialogTrigger>
-                  <DialogContent className="p-10">
+                <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
+                  <DialogTrigger className="bg-[#13136E] text-white rounded border-2 border-black p-3 font-bold" onClick={() => setDialogOpen(true)}>
+                    Update
+                  </DialogTrigger>
+                  <DialogContent className="p-10 min-w-[650px]">
                     <DialogHeader>
                       <DialogTitle>
                         <div className="flex justify-between items-center my-5">
@@ -89,7 +164,18 @@ export default function Home() {
                         <div className="w-7 h-7 grid place-items-center bg-blue-800 text-white rounded-full">1</div>
                         <div>Update your <strong>Rank</strong></div>
                         </div>
-                        <div className="flex justify-end"><input placeholder="Rank" className="max-w-[70%] outline-1 outline border-none p-1 rounded-md outline-blue-400" type="number"/></div>
+                        <div className="flex flex-col items-end">
+                          <input 
+                            value={testScores.rank}
+                            onChange={(e) => handleScoreUpdate('rank', e.target.value)}
+                            placeholder="Rank" 
+                            className={`max-w-[70%] outline-1 outline border-none p-1 rounded-md ${
+                              errors.rank ? 'outline-red-500 bg-red-50' : 'outline-blue-400'
+                            }`}
+                            type="number"
+                          />
+                          {errors.rank && <span className="text-red-500 text-sm">{errors.rank}</span>}
+                        </div>
                       </div>
 
                       <div className="flex justify-between items-center w-full">
@@ -97,7 +183,18 @@ export default function Home() {
                         <div className="w-7 h-7 grid place-items-center bg-blue-800 text-white rounded-full">2</div>
                         <div>Update your <strong>Percentile</strong></div>
                         </div>
-                        <div className="flex justify-end"><input placeholder="Rank" className="max-w-[70%] outline-1 outline border-none p-1 rounded-md outline-blue-400" type="number"/></div>
+                        <div className="flex flex-col items-end">
+                          <input 
+                            value={testScores.percentile}
+                            onChange={(e) => handleScoreUpdate('percentile', e.target.value)}
+                            placeholder="Percentile" 
+                            className={`max-w-[70%] outline-1 outline border-none p-1 rounded-md ${
+                              errors.percentile ? 'outline-red-500 bg-red-50' : 'outline-blue-400'
+                            }`}
+                            type="number"
+                          />
+                          {errors.percentile && <span className="text-red-500 text-sm">{errors.percentile}</span>}
+                        </div>
                       </div>
 
                       <div className="flex justify-between items-center w-full">
@@ -105,13 +202,36 @@ export default function Home() {
                         <div className="w-7 h-7 grid place-items-center bg-blue-800 text-white rounded-full">3</div>
                         <div>Update your <strong>Current Score (out of 15)</strong></div>
                         </div>
-                        <div className="flex justify-end"><input placeholder="Rank" className="max-w-[70%] outline-1 outline border-none p-1 rounded-md outline-blue-400" type="number"/></div>
+                        <div className="flex flex-col items-end">
+                          <input 
+                            value={testScores.currentScore}
+                            onChange={(e) => handleScoreUpdate('currentScore', e.target.value)}
+                            placeholder="Score" 
+                            className={`max-w-[70%] outline-1 outline border-none p-1 rounded-md ${
+                              errors.currentScore ? 'outline-red-500 bg-red-50' : 'outline-blue-400'
+                            }`}
+                            type="number"
+                          />
+                          {errors.currentScore && <span className="text-red-500 text-sm">{errors.currentScore}</span>}
+                        </div>
                       </div>
 
 
                       <div className="flex gap-5 justify-end">
-                        <button className="rounded p-2 font-semibold outline-1 text-blue-900 outline-blue-900 outline">Cancel</button>
-                        <button className="rounded p-2 font-semibold outline-1 text-white bg-blue-900 outline-black outline">Save </button>
+                        <button 
+                          onClick={() => setDialogOpen(false)} 
+                          className="rounded p-2 font-semibold outline-1 text-blue-900 outline-blue-900 outline"
+                        >
+                          Cancel
+                        </button>
+                        <button 
+                          onClick={handleSave}
+                          className="rounded p-2 font-semibold outline-1 text-white bg-blue-900 outline-black outline"
+                        >
+                          <div className="flex gap-2 items-center">
+                            Save <ArrowRight/>
+                          </div>
+                        </button>
                       </div>
                       
                     </div>
@@ -131,7 +251,7 @@ export default function Home() {
                   </div>
                   <div>
                     <span className="text-3xl font-bold">
-                      4
+                      {testScores.rank}
                     </span><br/>
                     <span className="text-slate-500 font-medium">
                       YOUR RANK
@@ -146,7 +266,7 @@ export default function Home() {
                   </div>
                   <div>
                     <span className="text-3xl font-bold">
-                      90%
+                      {testScores.percentile}%
                     </span><br/>
                     <span className="text-slate-500 font-medium">
                       PERCENTILE
@@ -161,7 +281,7 @@ export default function Home() {
                   </div>
                   <div>
                     <span className="text-3xl font-bold">
-                      12/15
+                      {testScores.currentScore}/15
                     </span><br/>
                     <span className="text-slate-500 font-medium">
                       CORRECT ANSWERS
@@ -183,7 +303,7 @@ export default function Home() {
               </div>
 
               <div className="w-[800px] h-[400px] self-center">
-                <CustomLineChart percentileValue={90}/>
+                <CustomLineChart percentileValue={testScores.percentile}/>
               </div>
             </div>
         </div>
@@ -239,7 +359,7 @@ export default function Home() {
               <h1 className="text-xl font-bold">
                 Question Analysis
               </h1>
-              <span className="text-lg font-bold text-blue-700">10/15</span>
+              <span className="text-lg font-bold text-blue-700">{testScores.currentScore}/15</span>
             </div>
             <div>
               <p>
@@ -250,7 +370,7 @@ export default function Home() {
               </p>
             </div>
             <div className="w-[300px] h-[300px] self-center">
-          <CustomPieChart correct={12}/>
+          <CustomPieChart correct={testScores.currentScore}/>
             </div>
           </div>
         </div>
